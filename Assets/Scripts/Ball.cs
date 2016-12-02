@@ -3,8 +3,6 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class Ball : MonoBehaviour {
-
-<<<<<<< HEAD
 	//Objetos
 	public GameObject topWall;					//Muro con un collider para detectar cuando está la bola fuera de pantalla
 	public Text contador;						//Contador
@@ -33,6 +31,7 @@ public class Ball : MonoBehaviour {
 	Vector3 posicionInicial;					//Posición inicial de la bola
 	int puntos1;								//Puntos del jugador 1
 	int puntos2;								//Puntos del jugador 2
+	public bool paused = false;
     // Use this for initialization
     void Start()
 	{
@@ -43,76 +42,22 @@ public class Ball : MonoBehaviour {
 		jumpSound = this.GetComponent<AudioSource> ();
 		contador.gameObject.SetActive (false);
 		textAux.gameObject.SetActive (true);
-=======
-    float minForce = 20;
-    float maxForce = 55;
-    public float timer = 3;
-    public GameObject textObject;
-    public TextMesh text;
-    public bool started = false;
-    public bool timerDone = false;
-    // Use this for initialization
-    void Start()
-    {
-        text = textObject.GetComponent<TextMesh>();
->>>>>>> e9c91d9efdb39a150973bd2043e183c6365b93c5
     }
 	
 	// Update is called once per frame
 	void Update () {
         if (started && !timerDone)
         {
-<<<<<<< HEAD
-			//Impulsa inicialmente la bola hacia un lado aleatorio y con una fuerza aleatoria
-            Vector2 vectorAux;
-            float forceAux;
-				//Obteniendo fuerza aleatoria
-            forceAux = Random.Range(minForce, maxForce);
-				//Obteniendo lado aleatorio
-=======
-            Vector2 vectorAux;
-            float forceAux;
-            forceAux = Random.Range(minForce, maxForce);
->>>>>>> e9c91d9efdb39a150973bd2043e183c6365b93c5
-            if (Random.Range(0, 2) == 0)
-                vectorAux = Vector2.left * forceAux;
-            else
-                vectorAux = Vector2.right * forceAux;
-<<<<<<< HEAD
-			//Impulsando bola
-            GetComponent<Rigidbody2D>().AddForce(vectorAux * forceAux);
-            timerDone = true;
+			LanzarBola ();
         }
 		else if (!timerDone && !started && winner == 0)
         {
-            timer -= Time.deltaTime;
-            if (timer >= 2 && timer < 3)
-				contador.text = "2";                    
-            else if (timer >= 1 && timer < 2)
-				contador.text = "1";
-            else if (timer >= 0 && timer < 1)
-				contador.text = "GO";
-            else if( timer < -0.3)
-            {
-				contador.text = "";
-                started = true;
-				//Ponemos la bola como kinematic para que le afecten las fuerzas,
-				//  ya que durante el timer se encontraba "pausada"
-                GetComponent<Rigidbody2D>().isKinematic = false;
-				contador.gameObject.SetActive (false);
-            }
+			Contador ();
         }
 		if (winner != 0) {
 			//Si se pulsa el Espacio, reiniciamos la partida
 			if (Input.GetAxis("Restart") != 0) {
-				this.transform.position = posicionInicial;
-				winner = 0;
-				started = false;
-				timerDone = false;
-				timer = 3.7F;
-				contador.text = "3";
-				contador.gameObject.SetActive (true);
-				textAux.gameObject.SetActive (false);
+				Restart ();
 			}
 		}
 
@@ -162,26 +107,74 @@ public class Ball : MonoBehaviour {
 		if (coll.gameObject.name.StartsWith("Player")) {
 			jumpSound.Play ();
 		}
-=======
-            GetComponent<Rigidbody2D>().AddForce(vectorAux * forceAux);
-            timerDone = true;
-        }
-        else if (!timerDone && !started)
-        {
-            timer -= Time.deltaTime;
-            if (timer >= 2 && timer < 3)
-                text.text = "2";                    
-            else if (timer >= 1 && timer < 2)
-                text.text = "1";
-            else if (timer >= 0 && timer < 1)
-                text.text = "GO";
-            else if( timer < -0.5)
-            {
-                text.text = "";
-                started = true;
-                GetComponent<Rigidbody2D>().isKinematic = false;
-            }
-        }
->>>>>>> e9c91d9efdb39a150973bd2043e183c6365b93c5
+	}
+
+	public void Pause ()
+	{
+		this.GetComponent<Rigidbody2D>().isKinematic = true;
+	}
+
+	public void Resume ()
+	{
+		this.GetComponent<Rigidbody2D>().isKinematic = false;
+	}
+
+	void Contador ()
+	{
+		timer -= Time.deltaTime;
+		Debug.Log (Time.timeScale);
+		if (timer >= 2 && timer < 3)
+			contador.text = "2";                    
+		else if (timer >= 1 && timer < 2)
+			contador.text = "1";
+		else if (timer >= 0 && timer < 1)
+			contador.text = "GO";
+		else if( timer < -0.3)
+		{
+			contador.text = "";
+			started = true;
+			//Ponemos la bola como kinematic para que le afecten las fuerzas,
+			//  ya que durante el timer se encontraba "pausada"
+			GetComponent<Rigidbody2D>().isKinematic = false;
+			contador.gameObject.SetActive (false);
+		}
+	}
+
+	void Restart ()
+	{
+		this.transform.position = posicionInicial;
+		winner = 0;
+		started = false;
+		timerDone = false;
+		timer = 3.7F;
+		contador.text = "3";
+		contador.gameObject.SetActive (true);
+		textAux.gameObject.SetActive (false);
+	}
+
+	void LanzarBola ()
+	{
+		//Impulsa inicialmente la bola hacia un lado aleatorio y con una fuerza aleatoria
+		Vector2 vectorAux;
+		float forceAux;
+		//Obteniendo fuerza aleatoria
+		forceAux = Random.Range(minForce, maxForce);
+		//Obteniendo lado aleatorio
+		if (Random.Range(0, 2) == 0)
+			vectorAux = Vector2.left * forceAux;
+		else
+			vectorAux = Vector2.right * forceAux;
+		//Impulsando bola
+		GetComponent<Rigidbody2D>().AddForce(vectorAux * forceAux);
+		timerDone = true;
+	}
+
+	public void StartContador(){
+		started = false;
+		timerDone = false;
+		timer = 3.7F;
+		contador.text = "3";
+		contador.gameObject.SetActive (true);
+		Contador ();
 	}
 }
